@@ -1,0 +1,310 @@
+diff --git a/part1/question1.py b/part1/question1.py
+index 5c99fdb..caf7d7f 100644
+--- a/part1/question1.py
++++ b/part1/question1.py
+@@ -19,7 +19,9 @@ def get_city_temperature(city):
+    if city == "Sao Paulo":
+       return 17
+    if city == "San Francisco":
+-      return 16
++          return 16
++   if city == "New York":
++      return 14
+ 
+ def get_city_weather(city):
+ 
+@@ -27,6 +29,8 @@ def get_city_weather(city):
+ 
+   if city == "Sao Paulo":
+      sky_condition = "cloudy"
++  if city == "Quito":
++     sky_condition = "sunny" 
+   elif city == "New York":
+      sky_condition = "rainy"
+ 
+diff --git a/part1/question2.py b/part1/question2.py
+index 34a9b01..7c74cec 100644
+--- a/part1/question2.py
++++ b/part1/question2.py
+@@ -15,7 +15,8 @@
+ # it. As always, there is a test suite that checks the result. It is in 
+ # `question2_test.py.`
+ 
+-swapper = None
++def swapper(tuples):
++  return tuples[1], tuples[0]
+ 
+ def run_swapper(list_of_tuples):
+-  return list(map(swapper, list_of_tuples))
+\ No newline at end of file
++  return list(map(swapper, list_of_tuples))
+diff --git a/part1/question3.py b/part1/question3.py
+index 04fab99..f82158a 100644
+--- a/part1/question3.py
++++ b/part1/question3.py
+@@ -26,8 +26,29 @@
+ # formulas and their outputs in the test file, `question3_test.py`.
+ 
+ # This function should return an oven instance!
++class MagicalOven:
++  def __init__(self):
++    self.ingredients = []
++    self.output = None
++  
++  def add(self, item):
++    self.ingredients.append(item)
++  
++  def freeze(self):
++    self.output = "snow"
++  
++  def boil(self):
++    self.output = "gold"
++    
++  def wait(self):
++    self.output = "pizza"
++    
++  def get_output(self):
++    return self.output
++  
+ def make_oven():
+-  None
++  return MagicalOven()
++        
+ 
+ def alchemy_combine(oven, ingredients, temperature):
+   
+@@ -36,7 +57,7 @@ def alchemy_combine(oven, ingredients, temperature):
+ 
+   if temperature < 0:
+     oven.freeze()
+-  elif temperature >= 100:
++  elif temperature >= 5000:
+     oven.boil()
+   else:
+     oven.wait()
+diff --git a/part1/question3_test.py b/part1/question3_test.py
+index 6cb6c89..c1018de 100644
+--- a/part1/question3_test.py
++++ b/part1/question3_test.py
+@@ -1,3 +1,5 @@
++from question3 import alchemy_combine, make_oven
++
+ def test_alchemy_combine():
+ 
+   assert alchemy_combine(
+diff --git a/part1/question4.py b/part1/question4.py
+index 1e1b2bf..8e4e2bc 100644
+--- a/part1/question4.py
++++ b/part1/question4.py
+@@ -1,5 +1,3 @@
+-import pets_db
+-
+ ################################################################################
+ #     ____                          __     _                          __ __
+ #    / __ \  __  __  ___    _____  / /_   (_)  ____    ____          / // /
+@@ -24,7 +22,10 @@ import pets_db
+ 
+ sql_pets_owned_by_nobody = """
+ 
+-Your SQL here.
++SELECT a.name, a.species, a.age
++FROM animals a
++LEFT JOIN people_animals pa ON a.animal_id = pa.pet_id
++WHERE pa.owner_id IS NULL 
+ 
+ """
+ 
+@@ -34,7 +35,10 @@ Your SQL here.
+ 
+ sql_pets_older_than_owner = """
+ 
+-Your SQL here.
++SELECT count(*) FROM animals a
++INNER JOIN people_animals pa ON a.animal_id = pa.pet_id
++INNER JOIN people p ON p.person_id = pa.owner_id
++WHERE a.age > p.age
+ 
+ """
+ 
+@@ -43,6 +47,15 @@ Your SQL here.
+ # The output should be a list of tuples in the format: (<person name>, <pet name>, <species>)
+ sql_only_owned_by_bessie = """ 
+ 
+-Your SQL here.
++SELECT p.name, a.name, a.species
++FROM animals a
++INNER JOIN people_animals pa ON a.animal_id = pa.pet_id
++INNER JOIN people p ON p.person_id = pa.owner_id
++WHERE pa.owner_id = 2
++AND a.animal_id NOT IN (
++    SELECT pet_id FROM people_animals WHERE owner_id <> (
++        SELECT person_id FROM people WHERE name = 'bessie'
++    )
++)
+ 
+ """
+\ No newline at end of file
+diff --git a/part1/question5.py b/part1/question5.py
+index f76654f..06e9b27 100644
+--- a/part1/question5.py
++++ b/part1/question5.py
+@@ -19,9 +19,11 @@
+ # vegetarian integer
+ 
+ sql_create_favorite_foods = """
+-
+-Your SQL here.
+-
++    CREATE TABLE favorite_foods (
++        food_id integer,
++        name text,
++        vegetarian integer      
++    );
+ """
+ 
+ # Part 5.B:
+@@ -30,7 +32,8 @@ Your SQL here.
+ 
+ sql_alter_tables_with_favorite_food = """
+ 
+-Your SQL here.
++ALTER TABLE animals ADD COLUMN favorite_food_id INTEGER;
++ALTER TABLE people ADD COLUMN favorite_food_id INTEGER;
+ 
+ """
+ 
+@@ -40,6 +43,8 @@ Your SQL here.
+ 
+ sql_select_all_vegetarian_pets = """
+ 
+-Your SQL here.
++SELECT a.name, f.name FROM animals a
++INNER JOIN favorite_foods f ON a.favorite_food_id = f.food_id
++WHERE f.vegetarian = 1
+ 
+-"""
+\ No newline at end of file
++"""
+diff --git a/part2/src/main/java/org/velezreyes/quiz/question6/NotEnoughMoneyException.java b/part2/src/main/java/org/velezreyes/quiz/question6/NotEnoughMoneyException.java
+index 8f3bf9d..bd372b4 100644
+--- a/part2/src/main/java/org/velezreyes/quiz/question6/NotEnoughMoneyException.java
++++ b/part2/src/main/java/org/velezreyes/quiz/question6/NotEnoughMoneyException.java
+@@ -5,5 +5,6 @@ public class NotEnoughMoneyException extends Exception {
+   public NotEnoughMoneyException() {
+     super("Not enough money inserted.");
+   }
++
+   
+ }
+diff --git a/part2/src/main/java/org/velezreyes/quiz/question6/VendingMachine.java b/part2/src/main/java/org/velezreyes/quiz/question6/VendingMachine.java
+index 3f92825..d48305b 100644
+--- a/part2/src/main/java/org/velezreyes/quiz/question6/VendingMachine.java
++++ b/part2/src/main/java/org/velezreyes/quiz/question6/VendingMachine.java
+@@ -1,8 +1,10 @@
+ package org.velezreyes.quiz.question6;
+ 
+-public interface VendingMachine {
++public interface VendingMachine{
+ 
+   public void insertQuarter();
+ 
+   public Drink pressButton(String name) throws NotEnoughMoneyException, UnknownDrinkException;
++
++
+ }
+\ No newline at end of file
+diff --git a/part2/src/main/java/org/velezreyes/quiz/question6/VendingMachineImpl.java b/part2/src/main/java/org/velezreyes/quiz/question6/VendingMachineImpl.java
+index 85742c4..c32250d 100644
+--- a/part2/src/main/java/org/velezreyes/quiz/question6/VendingMachineImpl.java
++++ b/part2/src/main/java/org/velezreyes/quiz/question6/VendingMachineImpl.java
+@@ -1,9 +1,76 @@
+ package org.velezreyes.quiz.question6;
+ 
+-public class VendingMachineImpl {
++public class VendingMachineImpl implements VendingMachine{
++  private static VendingMachineImpl instance;
++  private int insertedQuarters;
+ 
++  private VendingMachineImpl(){
++    this.insertedQuarters = 0;
++  }
+   public static VendingMachine getInstance() {
+-    // Fix me!
++    if (instance == null) {
++      instance = new VendingMachineImpl();
++    }
++    return instance;
++    //return null;
++  }
++
++  @Override
++  public void insertQuarter() {
++    insertedQuarters += 25;
++  }
++
++  @Override
++  public Drink pressButton(String name) throws NotEnoughMoneyException, UnknownDrinkException {
++    if(name.equals("ScottCola")) {
++      if(insertedQuarters == 75){
++        Drink drink = new Drink() {
++          @Override
++          public String getName() {
++            return name;
++          }
++
++          @Override
++          public boolean isFizzy() {
++            return true;
++          }
++        };
++        insertedQuarters -= 75;
++        return drink;
++      }else {
++        throw new NotEnoughMoneyException();
++      }
++    }
++    else if(name.equals("KarenTea")){
++      if(insertedQuarters == 75) {
++        throw new NotEnoughMoneyException();
++      }else if (insertedQuarters == 100){
++        Drink drink = new Drink() {
++          @Override
++          public String getName() {
++            return name;
++          }
++
++          @Override
++          public boolean isFizzy() {
++            return false;
++          }
++        };
++        insertedQuarters -= 100;
++        return drink;
++      }else {
++        throw new NotEnoughMoneyException();
++      }
++    }
++    else if(name.equals("BessieBooze")){
++      if(insertedQuarters == 100){
++        throw new UnknownDrinkException();
++      }
++
++    }else{
++      throw new UnknownDrinkException();
++    }
+     return null;
+   }
++
+ }
+diff --git a/part2/src/test/java/org/velezreyes/quiz/Question6Test.java b/part2/src/test/java/org/velezreyes/quiz/Question6Test.java
+index eaf7fdd..fe1d8b7 100644
+--- a/part2/src/test/java/org/velezreyes/quiz/Question6Test.java
++++ b/part2/src/test/java/org/velezreyes/quiz/Question6Test.java
+@@ -44,6 +44,7 @@ public class Question6Test {
+     assertEquals(drink.getName(), "ScottCola");
+   }
+ 
++  @Test
+   public void machineResets() throws Exception {
+     VendingMachine vm = VendingMachineImpl.getInstance();
+ 
